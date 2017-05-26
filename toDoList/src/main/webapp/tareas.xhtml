@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:head>
+	<title>toDoList- Tareas</title>
+</h:head>
+
+<h:body>
+	<ui:include src="/header.xhtml" /> 
+	<div class="container">
+		<h2>Listado de tareas</h2>
+		<!-- Usuario registrado-->
+		<h:panelGroup rendered="#{sessionScope.usuario.tipo == 2}"> 
+			<h:dataTable value="#{tareaBean.findAll}" var="tarea" class="table table-striped table-hover ">
+				<h:column>
+					<f:facet name="header">Usuario</f:facet>
+		    	  	#{tarea.usuarioCreador} 	    	  				
+			   	</h:column> 
+		  		<h:column>
+					<f:facet name="header">Descripción</f:facet>
+		      		#{tarea.descripcion}
+		   		</h:column>
+				<h:column>
+					<f:facet name="header">Modo</f:facet>
+					<h:outputLabel 	value="Privada" rendered="#{tarea.tipoTarea == 1}" />
+					<h:outputLabel 	value="Publica" rendered="#{tarea.tipoTarea == 2}" />
+			   	</h:column>
+			   	<!-- 
+				<h:column>
+					<f:facet name="header">Tipo</f:facet>
+						<h:outputLabel 	value="Lectura" rendered="#{tarea.estado == 1}" />
+						<h:outputLabel 	value="Escritura" rendered="#{tarea.estado == 2}" />
+			   	</h:column>
+			   	 -->
+				<h:column>
+					<f:facet name="header">Estado</f:facet>
+					<h:outputLabel 	value="Pendiente" 
+									rendered="#{tarea.estado == 1}" />
+					<h:outputLabel 	value="Finalizada" 
+									rendered="#{tarea.estado == 2}" />
+			   	</h:column>		   		 
+			   	<h:column>
+			   		<f:facet name="header">Acción</f:facet>
+			   		<h:panelGroup rendered="#{(tarea.tipoTarea == 1 and sessionScope.usuario.usuario == tarea.usuarioCreador) or tarea.tipoTarea == 2}">
+						<h:form> 								
+							<h:commandLink id="editar" action="#{tareaBean.editTarea(tarea.id, tarea.titulo, tarea.descripcion, tarea.tipoTarea, tarea.estado, tarea.usuarioCreador)}">
+								<span class="glyphicon glyphicon-pencil"/>
+							</h:commandLink> 	  														
+						</h:form> 
+					</h:panelGroup>
+				</h:column>			
+			</h:dataTable>
+		</h:panelGroup>
+		
+		<!-- Administrador (no puede modificar las tareas -->
+		<h:panelGroup rendered="#{sessionScope.usuario.tipo != 2}"> 
+			<h:dataTable value="#{tareaBean.findAll}" var="tarea"  class="table table-striped table-hover ">
+				<h:column>
+					<f:facet name="header">Usuario</f:facet>
+		    	  	#{tarea.usuarioCreador} 	    	  				
+			   	</h:column> 
+		  		<h:column>
+					<f:facet name="header">Descripción</f:facet>
+		      		#{tarea.descripcion}
+		   		</h:column>
+				<h:column>
+					<f:facet name="header">Modo</f:facet>
+					<h:outputLabel 	value="Privada" rendered="#{tarea.tipoTarea == 1}" />
+					<h:outputLabel 	value="Publica" rendered="#{tarea.tipoTarea == 2}" />
+			   	</h:column>
+			   	<!-- 
+				<h:column>
+					<f:facet name="header">Tipo</f:facet>
+						<h:outputLabel 	value="Lectura" rendered="#{tarea.estado == 1}" />
+						<h:outputLabel 	value="Escritura" rendered="#{tarea.estado == 2}" />
+			   	</h:column>
+			   	 -->
+				<h:column>
+					<f:facet name="header">Estado</f:facet>
+					<h:outputLabel 	value="Pendiente" 
+									rendered="#{tarea.estado == 1}" />
+					<h:outputLabel 	value="Finalizada" 
+									rendered="#{tarea.estado == 2}" />
+			   	</h:column>		   		 		
+			</h:dataTable>
+		</h:panelGroup>
+	</div>
+	
+
+	
+</h:body>
+</html>

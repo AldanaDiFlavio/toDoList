@@ -22,14 +22,12 @@ public class TareaBean implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private Integer id = null;
+	private String titulo = null;
 	private String descripcion = null;
-	private String fecha = null;
-	private Integer creado_por = null;
-	private Integer modificado_por = null;
 	private Integer tipoTarea = null;
-	private Integer estadoTarea = null;
-	private Integer modoTarea = null;
-	private String nombreUsuario = null;
+	private Integer estado = null;
+	private Integer creado_por = null;
+	private String usuarioCreador = null;
 	
 	ApplicationContext context = new ClassPathXmlApplicationContext(new String[] {"beans.xml"});
 	TareaService service = (TareaService) context.getBean("tareaService");
@@ -38,63 +36,59 @@ public class TareaBean implements Serializable {
 		super();
 	}
 	
-	public String agregarUsuario(String creadoPor) {
+	public String save(String creadoPor) {
 		
 		Tarea tarea = buildTarea();
-		tarea.setCreado_por(Integer.parseInt(creadoPor));
-		service.agregarTarea(tarea);
+		tarea.setCreadoPor(Integer.parseInt(creadoPor));
+		service.save(tarea);
 		
-		return "listaDeTareas";
+		return "tareas";
 	}
 	public String deleteTarea(String id) {
 		
-		service.eliminarTarea(Integer.parseInt(id));				
+		service.deleteTarea(Integer.parseInt(id));				
 	
-		return "listaDeTareas";
+		return "tareas";
 	}
 		
 	// Para la edicion de una tarea
-	public String modificarTarea(String id, String descripcion, String fecha, String modificado_por, String tipoTarea, String estadoTarea, String modoTarea, String nombreUsuario) {		
+	public String editTarea(String id, String titulo, String descripcion, String tipo, String estado, String usrCreador) {		
 		this.setId(Integer.parseInt(id));
-		this.setDescripcion(descripcion);
-		this.setFecha(fecha);
-		this.setModificado_por(Integer.parseInt(modificado_por));
-		this.setTipoTarea(Integer.parseInt(tipoTarea));
-		this.setEstadoTarea(Integer.parseInt(estadoTarea));
-		this.setModoTarea(Integer.parseInt(modoTarea));
-		this.setNombreUsuario(nombreUsuario);
+		this.setTitulo(titulo);
+		this.setDescripcion(descripcion);		
+		this.setTipoTarea(Integer.parseInt(tipo));
+		this.setEstado(Integer.parseInt(estado));
+		this.setUsuarioCreador(usrCreador);
 		
-		return "modificarTarea";
+		return "editarTareaDisplay";
 	}
 	
 	// Visualizar tarea
-	public String verTarea(String id) {	
-		List<Tarea> list = service.buscarTarea(Integer.parseInt(id));
+	public String viewTarea(String id) {	
+		List<Tarea> list = service.searchTarea(Integer.parseInt(id));
 
 		if(list.isEmpty()) {
-			return "listaDeTareas";
+			return "tareas";
 		}
 		this.setId(list.get(0).getId());
+		this.setTitulo(list.get(0).getTitulo());
 		this.setDescripcion(list.get(0).getDescripcion());
-		this.setFecha(list.get(0).getFecha());
-		this.setModificado_por(list.get(0).getModificado_por());
 		this.setTipoTarea(list.get(0).getTipoTarea());
-		this.setEstadoTarea(list.get(0).getEstadoTarea());
-		this.setModoTarea(list.get(0).getModoTarea());	
-		this.setNombreUsuario(list.get(0).getNombreUsuario());
+		this.setEstado(list.get(0).getEstado());		
+		this.setUsuarioCreador(list.get(0).getUsuarioCreador());
 		
-		return "mostrarTarea";
+		return "verTarea";
 	}
 	
 	// Actualizar tarea
-	public String update(String id, String descripcion, String fecha, String modificado_por, Integer tipoTarea, Integer estadoTarea, Integer modoTarea) {	
+	public String update(String titulo, String descripcion, Integer tipoTarea, Integer estado) {	
 		
 		ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
-	    String idTarea = ec.getRequestParameterMap().get("formId:idAntiguo");
+	    String idTarea = ec.getRequestParameterMap().get("formId:idOld");
 		
-		service.update(idTarea, descripcion, fecha, modificado_por, tipoTarea, estadoTarea, modoTarea);
+		service.update(idTarea, titulo, descripcion, tipoTarea, estado);
 		
-		return "listaDeTareas";
+		return "tareas";
 	}
 	
 	// Busca todas las tareas guardadas
@@ -104,22 +98,20 @@ public class TareaBean implements Serializable {
 	}
 	
 	// Busca solo las tareas publicas (para los usuarios no registrados)
-	public List<Tarea> getVerTareasPublicas() {	
-		List<Tarea> list = service.verTareasPublicas();
+	public List<Tarea> getFindPublic() {	
+		List<Tarea> list = service.findPublic();
 		return list;
 	}
 	
 	private Tarea buildTarea() {
 		Tarea tarea = new Tarea();
 		tarea.setId(this.id);
+		tarea.setTitulo(this.titulo);
 		tarea.setDescripcion(this.descripcion);
-		tarea.setFecha(this.fecha);
-		tarea.setModificado_por(this.modificado_por);
-		tarea.setCreado_por(this.creado_por);
 		tarea.setTipoTarea(this.tipoTarea);
-		tarea.setEstadoTarea(this.estadoTarea);
-		tarea.setModoTarea(this.modoTarea);
-		tarea.setNombreUsuario(this.nombreUsuario);
+		tarea.setEstado(this.estado);
+		tarea.setCreadoPor(this.creado_por);		
+		tarea.setUsuarioCreador(this.usuarioCreador);
 		
 		return tarea;
 	}
@@ -132,6 +124,14 @@ public class TareaBean implements Serializable {
 		this.id = id;
 	}
 	
+	public String getTitulo() {
+		return titulo;
+	}
+
+	public void setTitulo(String titulo) {
+		this.titulo = titulo;
+	}
+
 	public String getDescripcion() {
 		return descripcion;
 	}
@@ -140,30 +140,21 @@ public class TareaBean implements Serializable {
 		this.descripcion = descripcion;
 	}
 	
-	public String getFecha() {
-		return fecha;
+	public Integer getEstado() {
+		return estado;
 	}
 
-	public void setFecha(String fecha) {
-		this.fecha = fecha;
-	}
-
-	public Integer getModificado_por() {
-		return modificado_por;
-	}
-
-	public void setModificado_por(Integer modificado_por) {
-		this.modificado_por = modificado_por;
+	public void setEstado(Integer estado) {
+		this.estado = estado;
 	}
 	
-	public Integer getCreado_por() {
+	public Integer getCreadoPor() {
 		return creado_por;
 	}
 
-	public void setCreado_por(Integer creado_por) {
-		this.creado_por = creado_por;
+	public void setCreadoPor(Integer creadoPor) {
+		this.creado_por = creadoPor;
 	}
-	
 	public Integer getTipoTarea() {
 		return tipoTarea;
 	}
@@ -172,28 +163,11 @@ public class TareaBean implements Serializable {
 		this.tipoTarea = tipoTarea;
 	}
 
-	public Integer getEstadoTarea() {
-		return estadoTarea;
+	public String getUsuarioCreador() {
+		return usuarioCreador;
 	}
 
-	public void setEstadoTarea(Integer estadoTarea) {
-		this.estadoTarea = estadoTarea;
-	}
-
-	public Integer getModoTarea() {
-		return modoTarea;
-	}
-
-	public void setModoTarea(Integer modoTarea) {
-		this.modoTarea = modoTarea;
-	}
-
-	public String getNombreUsuario() {
-		return nombreUsuario;
-	}
-
-	public void setNombreUsuario(String nombreUsuario) {
-		this.nombreUsuario = nombreUsuario;
-	}
-	
+	public void setUsuarioCreador(String usuarioCreador) {
+		this.usuarioCreador = usuarioCreador;
+	}	
 }

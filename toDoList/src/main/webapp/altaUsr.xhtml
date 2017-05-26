@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	>
+
+<h:head>
+	<title>toDoList - Nuevo usuario</title>
+</h:head>
+
+<h:body>
+	<ui:include src="/header.xhtml" />	
+	<f:metadata>
+    	<f:event type="preRenderView" listener="#{usuarioBean.verificarSesion}" />
+    	<f:event type="preRenderView" listener="#{usuarioBean.verificarUsuario}" />
+	</f:metadata>
+	
+	<div class="container">
+		<div class="row">
+			<div class="col-md-4 col-md-offset-4">
+				<h3>Nuevo usuario</h3>
+				<div class="login-panel panel panel-default">
+	 				<div class="panel-body">
+	 					<h:form>
+	 						<fieldset>
+	 							<div class="form-group">
+	 								<h:outputLabel for="usuario"/>Usuario:
+									<h:inputText class="form-control" value="#{usuarioBean.usuario}" id="usuario"/>
+	 							</div>
+	 							
+	 							<div class="form-group">
+	 								<h:outputLabel for="password"/>Clave:
+									<h:inputSecret class="form-control" type="password" value="#{usuarioBean.password}" id="password"/>
+	 							</div>
+	 							
+	 							<div class="form-group">
+	 								<h:outputLabel for="tipo"/>Categoría:
+									<h:selectOneMenu class="form-control" value = "#{usuarioBean.tipo}">
+										<f:selectItem itemValue = "0" itemLabel = "Seleccione..." /> 
+					   					<f:selectItem itemValue = "1" itemLabel = "Administrador" /> 
+					   					<f:selectItem itemValue = "2" itemLabel = "Usuario" /> 
+									</h:selectOneMenu>
+								</div>
+								
+								<div class="form-group">
+									<h:outputLabel for="aprobado"/>Activación:
+									<h:selectOneMenu class="form-control" value = "#{usuarioBean.aprobado}">
+										<f:selectItem itemValue = "0" itemLabel = "Seleccione..." /> 
+					   					<f:selectItem itemValue = "S" itemLabel = "Activo" /> 
+					   					<f:selectItem itemValue = "N" itemLabel = "Inactivo" /> 
+									</h:selectOneMenu>
+								</div>
+	 						</fieldset>
+	 						
+	 						<h:commandButton class="btn btn-success btn-lg btn-block" action="#{usuarioBean.save}" value="Crear"/>
+							<h:link class="btn btn-primary btn-lg btn-block" value="Volver" outcome="usuarios"/>
+	 					</h:form>
+	 				</div>
+	 			</div>
+			</div>
+		</div>
+	</div>
+</h:body>
+</html>

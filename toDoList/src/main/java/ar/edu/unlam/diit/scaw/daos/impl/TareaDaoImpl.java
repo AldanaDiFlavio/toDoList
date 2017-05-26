@@ -15,7 +15,6 @@ import ar.edu.unlam.diit.scaw.entities.Tarea;
 
 
 public class TareaDaoImpl implements TareaDao {
-	
 	@Autowired
 	NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -24,49 +23,55 @@ public class TareaDaoImpl implements TareaDao {
 	}
 	
 	@Override
-	public void agregarTarea(Tarea tarea) {
-		String sql = "INSERT INTO TAREAS (ID, DESCRIPCION, FECHA, CREADO_POR, IDESTADO, IDTIPO, IDMODO) VALUES (:id, :descripcion, :fecha, :creado_por, :estadoTarea, :tipoTarea, :modoTarea)";
+	public void save(Tarea tarea) {
+
+		String sql = "INSERT INTO TAREA (id, titulo, descripcion, tipoTarea, estado, creado_por) VALUES (:id, :titulo, :descripcion, :tipoTarea, :estado, :creado_por)";
+
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", tarea.getId());
+		params.put("titulo", tarea.getTitulo());
 		params.put("descripcion", tarea.getDescripcion());
-		params.put("fecha", tarea.getFecha());
-		params.put("creado_por", tarea.getCreado_por());
-		params.put("modificado_por", tarea.getModificado_por());
 		params.put("tipoTarea", tarea.getTipoTarea());
-		params.put("estadoTarea", tarea.getEstadoTarea());
-		params.put("modoTarea", tarea.getModoTarea());
+		params.put("estado", tarea.getEstado());
+		params.put("creado_por", tarea.getCreadoPor());
+		
 		jdbcTemplate.update(sql, params);
 
 	}
 	
 	@Override
-	public List<Tarea> buscarTarea(Integer id) {		
-		String sql = "SELECT T.*, U.USUARIO FROM TAREAS T INNER JOIN USUARIOS U ON U.ID = T.CREADO_POR WHERE ID = :id";
+	public List<Tarea> searchTarea(Integer id) {		
+		//String sql = "SELECT * FROM TAREA WHERE ID = :id";
+		String sql = "SELECT T.*, U.USUARIO FROM TAREA T INNER JOIN USUARIO U ON U.ID = T.CREADO_POR WHERE ID = :id";
+		
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", id);
+		
 		List<Tarea> result = jdbcTemplate.query(sql, params, new TareaMapper());
+
 		return result;	
 	}
 	
 	@Override
-	public void update(String id, String descripcion, String fecha, String modificado_por, Integer tipoTarea, Integer estadoTarea, Integer modoTarea) { 
-		String sql = "UPDATE TAREAS SET DESCRIPCION = :descripcion, FECHA = :fecha, MODIFICADO_POR = :modificado_por, IDTIPO = :tipoTarea, IDESTADO = :estadoTarea, IDMODO = :idModo  WHERE ID = :id";
+	public void update(String id, String titulo, String descripcion, Integer tipoTarea, Integer estado) {
+
+		String sql = "UPDATE TAREA SET TITULO = :titulo, DESCRIPCION = :descripcion, TIPOTAREA = :tipoTarea, ESTADO = :estado WHERE ID = :id";
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", Integer.parseInt(id));
+		params.put("titulo", titulo);
 		params.put("descripcion", descripcion);
-		params.put("fecha", fecha);
-		params.put("modificado_por", modificado_por);
 		params.put("tipoTarea", tipoTarea);
-		params.put("estado", estadoTarea);
-		params.put("modo", modoTarea);
+		params.put("estado", estado);		
 		
 		jdbcTemplate.update(sql, params);
 	}
 	
 	@Override
-	public void eliminarTarea(Integer id) {		
-		String sql = "DELETE FROM TAREAS WHERE id = :idTarea";
+	public void deleteTarea(Integer id) {		
+		String sql = "DELETE FROM TAREA WHERE id = :idTarea";
+
 		Map<String, Object> params = new HashMap<String, Object>();
+
 		params.put("idTarea", id);
 		jdbcTemplate.update(sql, params);		
 	}
@@ -74,16 +79,24 @@ public class TareaDaoImpl implements TareaDao {
 	@Override
 	public List<Tarea> findAll() {
 		Map<String, Object> params = new HashMap<String, Object>();
-		String sql = "SELECT T.*, U.USUARIO FROM TAREAS T INNER JOIN USUARIOS U ON U.ID = T.CREADO_POR";
+
+		String sql = "SELECT T.*, U.USUARIO FROM TAREA T INNER JOIN USUARIO U ON U.ID = T.CREADO_POR";
+		//String sql = "SELECT * FROM TAREA";
+		
 		List<Tarea> result = jdbcTemplate.query(sql, params, new TareaMapper());
+
 		return result;
 	}
 	
 	@Override
-	public List<Tarea> verTareasPublicas() {
+	public List<Tarea> findPublic() {
 		Map<String, Object> params = new HashMap<String, Object>();
-		String sql = "SELECT T.*, U.USUARIO FROM TAREAS T INNER JOIN USUARIOS U ON U.ID = T.CREADO_POR WHERE T.IDTIPO = 2";
+
+		String sql = "SELECT T.*, U.USUARIO FROM TAREA T INNER JOIN USUARIO U ON U.ID = T.CREADO_POR WHERE T.TIPOTAREA = 2";
+		//String sql = "SELECT * FROM TAREA";
+		
 		List<Tarea> result = jdbcTemplate.query(sql, params, new TareaMapper());
+
 		return result;
 	}
 
@@ -99,15 +112,15 @@ public class TareaDaoImpl implements TareaDao {
 
 		public Tarea mapRow(ResultSet rs, int rowNum) throws SQLException {
 			Tarea tarea = new Tarea();
+			
 			tarea.setId(rs.getInt("id"));
+			tarea.setTitulo(rs.getString("titulo"));
 			tarea.setDescripcion(rs.getString("descripcion"));
-			tarea.setFecha(rs.getString("fecha"));
-			tarea.setCreado_por(rs.getInt("creado_por"));
-			tarea.setModificado_por(rs.getInt("modificado_por"));
 			tarea.setTipoTarea(rs.getInt("tipoTarea"));
-			tarea.setEstadoTarea(rs.getInt("estadoTarea"));
-			tarea.setModoTarea(rs.getInt("modoTarea"));
-			tarea.setNombreUsuario(rs.getString("nombreUsuario"));
+			tarea.setEstado(rs.getInt("estado"));
+			tarea.setCreadoPor(rs.getInt("creado_por"));
+			tarea.setUsuarioCreador(rs.getString("usuario"));
+			
 			return tarea;
 		}
 	}

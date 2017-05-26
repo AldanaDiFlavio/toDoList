@@ -8,13 +8,11 @@ import java.io.Serializable;
 
 		private Integer id;
 		private String descripcion;
-		private String fecha;
+		private String titulo;
+		private Integer estado;
 		private Integer creado_por;
-		private Integer modificado_por;
 		private Integer tipoTarea;
-		private Integer estadoTarea;
-		private Integer modoTarea;
-		private String nombreUsuario;
+		private String usuarioCreador;
 
 		public Tarea() {
 		}
@@ -27,6 +25,14 @@ import java.io.Serializable;
 			this.id = id;
 		}
 
+		public String getTitulo() {
+			return titulo;
+		}
+
+		public void setTitulo(String titulo) {
+			this.titulo = titulo;
+		}
+
 		public String getDescripcion() {
 			return descripcion;
 		}
@@ -34,23 +40,22 @@ import java.io.Serializable;
 		public void setDescripcion(String descripcion) {
 			this.descripcion = descripcion;
 		}
+		
+		public Integer getEstado() {
+			return estado;
+		}
 
-		public Integer getCreado_por() {
+		public void setEstado(Integer estado) {
+			this.estado = estado;
+		}
+		
+		public Integer getCreadoPor() {
 			return creado_por;
 		}
 
-		public void setCreado_por(Integer creado_por) {
-			this.creado_por = creado_por;
+		public void setCreadoPor(Integer creadoPor) {
+			this.creado_por = creadoPor;
 		}
-
-		public Integer getModificado_por() {
-			return modificado_por;
-		}
-
-		public void setModificado_por(Integer modificado_por) {
-			this.modificado_por = modificado_por;
-		}
-
 		public Integer getTipoTarea() {
 			return tipoTarea;
 		}
@@ -58,38 +63,12 @@ import java.io.Serializable;
 		public void setTipoTarea(Integer tipoTarea) {
 			this.tipoTarea = tipoTarea;
 		}
-
-		public Integer getEstadoTarea() {
-			return estadoTarea;
+		
+		public String getUsuarioCreador() {
+			return usuarioCreador;
 		}
 
-		public void setEstadoTarea(Integer estadoTarea) {
-			this.estadoTarea = estadoTarea;
-		}
-
-		public Integer getModoTarea() {
-			return modoTarea;
-		}
-
-		public void setModoTarea(Integer modoTarea) {
-			this.modoTarea = modoTarea;
-		}
-
-		public String getNombreUsuario() {
-			return nombreUsuario;
-		}
-
-		public void setNombreUsuario(String nombreUsuario) {
-			this.nombreUsuario = nombreUsuario;
-		}
-
-		public String getFecha() {
-			return fecha;
-		}
-
-		public void setFecha(String fecha) {
-			this.fecha = fecha;
-		}
-
-			
+		public void setUsuarioCreador(String usuarioCreador) {
+			this.usuarioCreador = usuarioCreador;
+		}	
 	}

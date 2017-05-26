@@ -8,9 +8,9 @@ public class Usuario implements Serializable {
 
 	private Integer id;
 	private String usuario;
-	private String clave;
+	private String password;
 	private Integer tipo;
-	private String condicion;
+	private String aprobado;
 
 	public Usuario() {
 	}
@@ -31,12 +31,12 @@ public class Usuario implements Serializable {
 		this.usuario = usuarior;
 	}
 
-	public String getClave() {
-		return clave;
+	public String getPassword() {
+		return password;
 	}
 
-	public void setClave(String clave) {
-		this.clave = clave;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 	
 	public Integer getTipo() {
@@ -47,11 +47,11 @@ public class Usuario implements Serializable {
 		this.tipo = tipo;
 	}
 	
-	public String getCondicion() {
-		return condicion;
+	public String getAprobado() {
+		return aprobado;
 	}
 
-	public void setCondicion(String condicion) {
-		this.condicion = condicion;
+	public void setAprobado(String aprobado) {
+		this.aprobado = aprobado;
 	}	
 }

@@ -25,9 +25,9 @@ public class UsuarioBean implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String usuario = null;
-	private String clave = null;
+	private String password = null;
 	private Integer tipo = null;
-	private String condicion = null;
+	private String aprobado = null;
 	
 	ApplicationContext context = new ClassPathXmlApplicationContext(new String[] {"beans.xml"});
 	UsuarioService service = (UsuarioService) context.getBean("usuarioService");
@@ -37,49 +37,108 @@ public class UsuarioBean implements Serializable {
 		super();
 	}
 	
-	public String agregarUsuario() {
+	public String save() {
 		
 		Usuario usuario = buildUsuario();
 		
-		service.agregarUsuario(usuario);
+		service.save(usuario);
 		
-		return "listaDeUsuarios";
+		return "usuarios";
 	}
 	
-	public String modificarUsuario(String usuario, int tipo, String condicion) {
+	public String register() {
 		
-		ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
-	    String usuarioAntiguo = ec.getRequestParameterMap().get("formId:usuarioAntiguo");
+		Usuario usuario = buildUsuario();
 		
-		service.modificarUsuario(usuarioAntiguo, usuario, tipo, condicion);
+		if (usuario.getUsuario() != "" && usuario.getPassword() != "") {
 		
-		return "listaDeUsuarios";
-	}
-	
-	public String eliminarUsuario(String usuario) {
-		
-		service.eliminarUsuario(usuario);				
-		
-		return "listaDeUsuarios";
-	}	
-	
-	public String update(String usuario) {
-		List<Usuario> list = service.update(usuario);
-		if(list.isEmpty()) {
-			return "modificarUsuario";
+			List<Usuario> list = service.searchUsr(usuario.getUsuario());
+			if(list.isEmpty()) {	// Si el usuario no existe se puede registrar en el sistema
+				usuario.setTipo(2); 		// Se registra como usuario comun
+				usuario.setAprobado("N");	// Se registra como no habilitado
+				
+				service.save(usuario);
+				
+				return "tareas";
+				
+			}
 		}
 		
-		this.setUsuario(usuario);
-		this.setCondicion(list.get(0).getCondicion());
-		this.setTipo(list.get(0).getTipo());		
-			
-		return "listaDeUsuarios";
+		return "registrarse";
 	}
 	
-	public String cambiarCondicion(int id, String condicion) {
+	public String update(String usrName, int tipo, String aprobado) {
 		
-		if (condicion != "") {
-			service.cambiarCondicion(id, condicion);				
+		ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+	    String userOld = ec.getRequestParameterMap().get("formId:userOld");
+		
+		service.update(userOld, usrName, tipo, aprobado);
+		
+		return "usuarios";
+	}
+	
+	public String updateInfoPersonal(String usrName, String password) throws ServletException {
+		
+		if(usrName != "" && password != ""){
+			ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+			String userOld = ec.getRequestParameterMap().get("formId:userOld");
+		
+			service.updateInfoPersonal(userOld, usrName, password);
+					
+			this.crearSesion(usrName, password);
+							
+			return "tareas";
+		
+		} else {
+			return "editarInfoPersonal";
+		}
+		
+	}
+	
+	public String deleteUsr(String nombreUsr) {
+		
+		service.cerrarCuenta(nombreUsr);				
+		
+		return "usuarios";
+	}	
+	
+	public String cerrarCuenta(String nombreUsr) throws ServletException {
+		
+		service.cerrarCuenta(nombreUsr);				
+		this.eliminarSesion();
+		
+		return "login";
+	}
+	
+	public String editUsr(String nombreUsr) {
+		List<Usuario> list = service.searchUsr(nombreUsr);
+		if(list.isEmpty()) {
+			return "editarUsr";
+		}
+		
+		this.setUsuario(nombreUsr);
+		this.setAprobado(list.get(0).getAprobado());
+		this.setTipo(list.get(0).getTipo());		
+			
+		return "editarUsrDisplay";
+	}
+	
+	public String editInfoPersonal(String nombreUsr) {
+		List<Usuario> list = service.searchUsr(nombreUsr);
+		if(list.isEmpty()) {	// No deberia indicar que no existe
+			return "tareas";	// En tal caso muestro lista tareas
+		}
+		
+		this.setUsuario(nombreUsr);
+		this.setPassword(list.get(0).getPassword());
+				
+		return "editarInfoPersonalDisplay";
+	}
+	
+	public String changeUsrState(int idUsr, String state) {
+		
+		if (state != "") {
+			service.changeUsrState(idUsr, state);				
 		}
 		return "usuarios";
 	}
@@ -92,19 +151,19 @@ public class UsuarioBean implements Serializable {
 	private Usuario buildUsuario() {
 		Usuario usuario = new Usuario();
 		usuario.setUsuario(this.usuario);
-		usuario.setClave(this.clave);
+		usuario.setPassword(this.password);
 		usuario.setTipo(this.tipo);
-		usuario.setCondicion(this.condicion);
+		usuario.setAprobado(this.aprobado);
 		
 		return usuario;
 	}
 
-	public UsuarioBean(String usuario, String clave, Integer tipo, String condicion) {
+	public UsuarioBean(String usuario, String password, Integer tipo, String aprobado) {
 		super();
 		this.usuario = usuario;
-		this.clave = clave;
+		this.password = password;
 		this.tipo = tipo;
-		this.condicion = condicion;
+		this.aprobado = aprobado;
 	}
 
 	public String getUsuario() {
@@ -115,12 +174,12 @@ public class UsuarioBean implements Serializable {
 		this.usuario = usuario;
 	}
 
-	public String getClave() {
-		return clave;
+	public String getPassword() {
+		return password;
 	}
 
-	public void setClave(String clave) {
-		this.clave = clave;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public Integer getTipo() {
@@ -131,18 +190,18 @@ public class UsuarioBean implements Serializable {
 		this.tipo = tipo;
 	}
 
-	public String getCondicion() {
-		return condicion;
+	public String getAprobado() {
+		return aprobado;
 	}
 
-	public void setCondicion(String condicion) {
-		this.condicion = condicion;
+	public void setAprobado(String aprobado) {
+		this.aprobado = aprobado;
 	}
 	
 	// Generacion de la sesion de usuario 
-	public String crearSesion(String nombreUsuario, String clave ) throws ServletException { 
+	public String crearSesion(String usrName, String password ) throws ServletException { 
 		
-		List<Usuario> list = service.crearSesion(nombreUsuario, clave);
+		List<Usuario> list = service.crearSesion(usrName, password);
 		
 		if(list.isEmpty()) {	// usuario no registrado
 			FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
@@ -157,20 +216,20 @@ public class UsuarioBean implements Serializable {
 			usuario.setId(list.get(0).getId());
 			usuario.setUsuario(list.get(0).getUsuario());
 			usuario.setTipo(list.get(0).getTipo());
-			usuario.setCondicion(list.get(0).getCondicion());
+			usuario.setAprobado(list.get(0).getAprobado());
 			
 			HttpSession session = request.getSession(true);
 			session.setAttribute("id", usuario.getId());
 			session.setAttribute("usuario", usuario.getUsuario());
 			session.setAttribute("tipo", usuario.getTipo());
-			session.setAttribute("condicion", usuario.getCondicion());
+			session.setAttribute("aprobado", usuario.getAprobado());
 			
 			FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("usuario", usuario);
 			
 			if (usuario.getTipo() == 1) { 
-				return "listaDeUsuarios";	// Administrador -> muestro usuarios					
+				return "usuarios";	// Administrador -> muestro usuarios					
 			} else {
-				return "listaDeTareas";	// Usuarios -> muestro tareas
+				return "tareas";	// Usuarios -> muestro tareas
 			}
 			
 		}
@@ -189,16 +248,13 @@ public class UsuarioBean implements Serializable {
 	
 	//este metodo se debe incluir en las vistas para resstringir acceso no autorizado
 	public void verificarSesion() throws IOException{
-		//TODO: verificar el tipo usuario -> comun/adm -> para ver en que pagina intenta acceder
 		if(FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("usuario") == null) {
-
 			FacesContext.getCurrentInstance().getExternalContext().redirect("login.xhtml");
 		}
 	}
 	
 	//este metodo se debe incluir en las vistas para resstringir acceso a usuarios no administradores
 	public void verificarUsuario() throws IOException{
-		//TODO: verificar el tipo usuario -> comun/adm -> para ver en que pagina intenta acceder
 		if(!(FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("tipo").toString().contentEquals("1"))) {
 			// Si el usuario esta registrado y no es administrador es redirigido a la pag de tareas 
 			FacesContext.getCurrentInstance().getExternalContext().redirect("tareas.xhtml");

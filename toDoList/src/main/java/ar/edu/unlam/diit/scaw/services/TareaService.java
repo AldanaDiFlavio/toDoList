@@ -6,11 +6,16 @@ import ar.edu.unlam.diit.scaw.entities.Tarea;
 
 public interface TareaService {
 
-	public void agregarTarea(Tarea tarea);
-	public List<Tarea> findAll();
-	public List<Tarea> verTareasPublicas();
-	public void eliminarTarea(Integer id);
-	public List<Tarea> buscarTarea(Integer id);
-	public void update(String id, String descripcion, String fecha, String modificado_por, Integer tipoTarea, Integer estadoTarea, Integer modoTarea);
+	public void save(Tarea tarea);
+	
+	public void deleteTarea(Integer id);
+	
+	public List<Tarea> searchTarea(Integer id);
 
+	public List<Tarea> findAll();
+	
+	public List<Tarea> findPublic();
+	
+	public void update(String id, String titulo, String descripcion, Integer tipoTarea, Integer estado);
+	
 }

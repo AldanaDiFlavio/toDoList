@@ -23,80 +23,102 @@ public class UsuarioDaoImpl implements UsuarioDao {
 	}
 
 	@Override
-	public void agregarUsuario(Usuario usuario) {
+	public void save(Usuario usuario) {
 
-		String sql = "INSERT INTO USUARIO (USUARIO, CLAVE, TIPO, CONDICION) VALUES (:usuario, :clave, :tipo, :condicion)";
+		String sql = "INSERT INTO USUARIO (USUARIO, PASSWORD, TIPO, APROBADO) VALUES (:usuario, :password, :tipo, :aprobado)";
 
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("usuario", usuario.getUsuario());
-		params.put("clave", usuario.getClave());
+		params.put("password", usuario.getPassword());
 		params.put("tipo", usuario.getTipo());
-		params.put("condicion", usuario.getCondicion());
+		params.put("aprobado", usuario.getAprobado());
 		jdbcTemplate.update(sql, params);
+
 	}
 	
 	@Override
-	public void modificarUsuario(String usuarioAntiguo, String usuario, int tipo, String condicion) {
+	public void update(String usrNameOld, String usrName, int tipo, String aprobado) {
 
-		String sql = "UPDATE USUARIO SET USUARIO = :usuario, TIPO = :tipo, CONDICION = :condicion WHERE USUARIO LIKE :usuarioAntiguo";
+		String sql = "UPDATE USUARIO SET USUARIO = :usuario, TIPO = :tipo, APROBADO = :aprobado WHERE USUARIO LIKE :usuarioOld";
 
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("usuarioAntiguo", usuarioAntiguo);
-		params.put("usuario", usuario);
+		params.put("usuarioOld", usrNameOld);
+		params.put("usuario", usrName);
 		params.put("tipo", tipo);
-		params.put("condicion", condicion);
+		params.put("aprobado", aprobado);
 		jdbcTemplate.update(sql, params);
 
 	}
 	
 	@Override
-	public void eliminarUsuario(String usuario) {		
+	public void updateInfoPersonal(String usrNameOld, String usrName, String password) {
+
+		String sql = "UPDATE USUARIO SET USUARIO = :usuario, PASSWORD = :password WHERE USUARIO LIKE :usuarioOld";
+
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("usuarioOld", usrNameOld);
+		params.put("usuario", usrName);
+		params.put("password", password);
+		
+		jdbcTemplate.update(sql, params);
+
+	}
+	
+	@Override
+	public void deleteUsr(String usrName) {		
 		String sql = "DELETE FROM USUARIO WHERE USUARIO LIKE :usuario";
 
 		Map<String, Object> params = new HashMap<String, Object>();
 
-		params.put("usuario", usuario);
+		params.put("usuario", usrName);
 		jdbcTemplate.update(sql, params);		
 	}
-
-	@Override
-	public void cambiarCondicion(int id, String condicion) {		
-		String sql = "UPDATE USUARIO SET CONDICION = :condicion WHERE ID = :id";
-
-		Map<String, Object> params = new HashMap<String, Object>();
-
-		params.put("condicion", condicion);
-		params.put("id", id);
-		jdbcTemplate.update(sql, params);					
-	} 
 	
 	@Override
-	public List<Usuario> crearSesion(String usuario, String clave){
-		String sql = "SELECT * FROM USUARIO WHERE USUARIO LIKE :usuario AND CLAVE LIKE :clave AND CONDICION LIKE :condicion";
+	public void cerrarCuenta(String usrName) {
+		String sql;
 		
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("usuario", usuario);
-		params.put("clave", clave);
-		params.put("condicion", "Activo");
+		/* BORRADO DE TAREAS CORRESPONDIENTES AL USUARIO */
 		
-		List<Usuario> result = jdbcTemplate.query(sql, params, new UsuarioMapper());
+		sql = "DELETE FROM TAREA WHERE CREADO_POR = (SELECT ID FROM USUARIO WHERE USUARIO LIKE :usuario)";
 
-		return result;
-		
+		Map<String, Object> params = new HashMap<String, Object>();
+
+		params.put("usuario", usrName);
+		jdbcTemplate.update(sql, params);		
+
+		/* BORRADO DEL USUARIO */
+				
+		sql = "DELETE FROM USUARIO WHERE USUARIO LIKE :usuario";
+
+		params = new HashMap<String, Object>();
+
+		params.put("usuario", usrName);
+		jdbcTemplate.update(sql, params);
 	}
 	
 	@Override
-	public List<Usuario> update(String usuario) {		
+	public List<Usuario> searchUsr(String usrName) {		
 		String sql = "SELECT * FROM USUARIO WHERE USUARIO LIKE :usuario";
 		
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("usuario", usuario);
+		params.put("usuario", usrName);
 		
 		List<Usuario> result = jdbcTemplate.query(sql, params, new UsuarioMapper());
 
 		return result;	
 	}
+	
+	@Override
+	public void changeUsrState(int id, String estado) {		
+		String sql = "UPDATE USUARIO SET APROBADO = :estado WHERE ID = :id";
 
+		Map<String, Object> params = new HashMap<String, Object>();
+
+		params.put("estado", estado);
+		params.put("id", id);
+		jdbcTemplate.update(sql, params);					
+	}
 	
 	@Override
 	public List<Usuario> findAll() {
@@ -117,6 +139,20 @@ public class UsuarioDaoImpl implements UsuarioDao {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 	
+	@Override
+	public List<Usuario> crearSesion(String usrName, String password){
+		String sql = "SELECT * FROM USUARIO WHERE USUARIO LIKE :usuario AND PASSWORD LIKE :password AND APROBADO LIKE :aprobado";
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("usuario", usrName);
+		params.put("password", password);
+		params.put("aprobado", "S");
+		
+		List<Usuario> result = jdbcTemplate.query(sql, params, new UsuarioMapper());
+
+		return result;
+		
+	}
 
 	private static final class UsuarioMapper implements RowMapper<Usuario> {
 
@@ -124,9 +160,9 @@ public class UsuarioDaoImpl implements UsuarioDao {
 			Usuario usuario = new Usuario();
 			usuario.setId(rs.getInt("id"));
 			usuario.setUsuario(rs.getString("usuario"));
-			usuario.setClave(rs.getString("clave"));
+			usuario.setPassword(rs.getString("password"));
 			usuario.setTipo(rs.getInt("tipo"));
-			usuario.setCondicion(rs.getString("condicion"));
+			usuario.setAprobado(rs.getString("aprobado"));
 			return usuario;
 		}
 	}

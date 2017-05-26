@@ -14,28 +14,38 @@ public class UsuarioServiceImpl implements UsuarioService {
 	UsuarioDao usuarioDao;
 	
 	@Override
-	public void agregarUsuario(Usuario usuario) {
-		usuarioDao.agregarUsuario(usuario);
+	public void save(Usuario usuario) {
+		usuarioDao.save(usuario);
 	}
 
 	@Override
-	public void modificarUsuario(String usuarioAntiguo, String usuario, int tipo, String condicion) {
-		usuarioDao.modificarUsuario(usuarioAntiguo, usuario, tipo, condicion);
+	public void update(String usrNameOld, String usrName, int tipo, String aprobado) {
+		usuarioDao.update(usrNameOld, usrName, tipo, aprobado);
+	}
+	
+	@Override
+	public void updateInfoPersonal(String usrNameOld, String usrName, String password) {
+		usuarioDao.updateInfoPersonal(usrNameOld, usrName, password);
 	}
 	
 	//@Override
-	public void eliminarUsuario(String usuario) {
-		usuarioDao.eliminarUsuario(usuario);
+	public void deleteUsr(String usrName) {
+		usuarioDao.deleteUsr(usrName);
 	}
 	
 	//@Override
-	public List<Usuario> update(String usrName) {
-		return usuarioDao.update(usrName);
+	public void cerrarCuenta(String usrName) {
+		usuarioDao.cerrarCuenta(usrName);
 	}
 	
 	//@Override
-	public void cambiarCondicion(int id, String condicion) {
-		usuarioDao.cambiarCondicion(id, condicion);
+	public List<Usuario> searchUsr(String usrName) {
+		return usuarioDao.searchUsr(usrName);
+	}
+	
+	//@Override
+	public void changeUsrState(int idUsr, String state) {
+		usuarioDao.changeUsrState(idUsr, state);
 	}
 	
 	@Override

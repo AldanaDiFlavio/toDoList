@@ -16,17 +16,17 @@ public class TareaServiceImpl implements TareaService {
 	TareaDao tareaDao;
 	
 	@Override
-	public void agregarTarea(Tarea tarea) {
-		tareaDao.agregarTarea(tarea);
+	public void save(Tarea tarea) {
+		tareaDao.save(tarea);
 	}
 
 	//@Override
-	public List<Tarea> buscarTarea(Integer id	) {
-		return tareaDao.buscarTarea(id);
+	public List<Tarea> searchTarea(Integer id	) {
+		return tareaDao.searchTarea(id);
 	}
 	@Override
-	public void update(String id, String descripcion, String fecha, String modificado_por, Integer tipoTarea, Integer estadoTarea, Integer modoTarea) {
-		tareaDao.update(id, descripcion, fecha, modificado_por, tipoTarea, estadoTarea, modoTarea);
+	public void update(String id,String titulo, String descripcion, Integer tipoTarea, Integer estado) {
+		tareaDao.update(id,titulo, descripcion, tipoTarea, estado);
 	}
 	@Override
 	public List<Tarea> findAll() {
@@ -34,8 +34,8 @@ public class TareaServiceImpl implements TareaService {
 	}
 	
 	@Override
-	public List<Tarea> verTareasPublicas() {
-		return tareaDao.verTareasPublicas();
+	public List<Tarea> findPublic() {
+		return tareaDao.findPublic();
 	}
 	
 	public TareaDao getTareaDao() {
@@ -47,8 +47,8 @@ public class TareaServiceImpl implements TareaService {
 	}
 	
 	//@Override
-	public void eliminarTarea(Integer id) {
-		tareaDao.eliminarTarea(id);
+	public void deleteTarea(Integer id) {
+		tareaDao.deleteTarea(id);
 	}
 	
 }

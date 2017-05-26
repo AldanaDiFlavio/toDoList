@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:head>
+	<title>toDoList - Editar tarea</title>
+</h:head>
+
+<h:body>
+	<ui:include src="/header.xhtml" />
+	<f:metadata>
+    	<f:event type="preRenderView" listener="#{usuarioBean.verificarSesion}" />
+	</f:metadata>
+
+	 <div class="container">
+		<div class="row">
+			<div class="col-md-4 col-md-offset-4">
+				<h3>Editar tarea</h3>
+				<div class="login-panel panel panel-default">
+	 				<div class="panel-body">
+						<h:form id="formId" name="formId">
+							<fieldset>
+							<div class="form-group">	
+									<h:outputLabel for="titulo"/>Título:
+									<h:inputText class="form-control" value="#{tareaBean.titulo}" id="titulo"/>
+								</div>
+								
+								<div class="form-group">
+									<h:outputLabel for="descripcion"/>Descripción:
+									<h:inputTextarea class="form-control" rows="5" type="descripcion" value="#{tareaBean.descripcion}" id="descripcion"/>
+								</div>
+								
+								<div class="form-group">
+									<h:outputLabel for="tipoTarea"/>Modo:
+									<h:selectOneMenu class="form-control" value = "#{tareaBean.tipoTarea}"> 
+						   				<f:selectItem itemValue = "1" itemLabel = "Privada" /> 
+						   				<f:selectItem itemValue = "2" itemLabel = "Publica" /> 
+									</h:selectOneMenu>
+								</div>
+								<!-- 
+								<div class="form-group">
+									<h:outputLabel for="tipoTarea">Tipo:</h:outputLabel>
+									<h:selectOneMenu class="form-control" value = "#{tareaBean.tipoTarea}"> 
+						   				<f:selectItem itemValue = "1" itemLabel = "Lectura" /> 
+						   				<f:selectItem itemValue = "2" itemLabel = "Escritura" /> 
+									</h:selectOneMenu>
+								</div> -->
+								
+								<div class="form-group">
+									<h:outputLabel for="estado"/>Estado:
+									<h:selectOneMenu class="form-control" value = "#{tareaBean.estado}"> 
+						   				<f:selectItem itemValue = "1" itemLabel = "Pendiente" /> 
+						   				<f:selectItem itemValue = "2" itemLabel = "Completa" /> 
+									</h:selectOneMenu>
+								</div>
+			  				</fieldset>
+			  				
+       	  					<h:inputHidden value="#{tareaBean.id}" id="idOld" name="formId:idOld"/>	
+				       	  	<h:commandButton class="btn btn-success btn-lg btn-block" action="#{tareaBean.update(tareaBean.titulo, tareaBean.descripcion, tareaBean.tipoTarea, tareaBean.estado)}" value="Guardar cambios"/>
+				       	  	<h:link class="btn btn-primary btn-lg btn-block" value="Volver" outcome="tareas" />
+						</h:form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</h:body>
+</html>

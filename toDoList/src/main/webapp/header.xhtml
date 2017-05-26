@@ -10,72 +10,51 @@
 	>
 
 <h:head>
-	<title></title>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+	<script type="text/javascript" src="js/bootstrap.min.js"/>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
 </h:head>
 
 <h:body>	
-	<!-- Menu administrador -->   
-    <h:panelGroup rendered="#{sessionScope.usuario.tipo == 1}">
-   		<h:panelGrid columns="1" border="1">
-			<h:outputLabel align="center" id="adminNameLabel" 
-			for="adminName" value=" Bienvenido: #{sessionScope.usuario.usuario} " /> 
-		</h:panelGrid>
-		<br />
-		
-		<h:panelGrid columns="18" border="0">
-	
-			<ul style="list-style-type:none; margin: 0; padding: 0;">
-				<li>
-					<h:link value="Listado usuarios" outcome="usuarios" /> |
-		  			<h:link value="Alta usuario" outcome="altaUsr" /> | 
-		  			<!--  <h:link value="Baja usuario" outcome="bajaUsr" /> | --> 
-		  			<!--  <h:link value="Editar usuario" outcome="editarUsr" /> | -->
-		  			<h:link value="Listado tareas" outcome="tareas" /> |
-		  			<h:link value="Crear tarea" outcome="altaTarea" /> |
-		  			<!--  <h:link value="Editar tarea" outcome="editarTarea" /> | -->  		
-		  			<h:form padding="top"> 
-		  				<h:commandLink id="Salir" value="Salir" align="right" action="#{usuarioBean.eliminarSesion}" /> 
-		  			</h:form>	  		
-		  		</li>
-			</ul>
-		</h:panelGrid>
-    	
-	</h:panelGroup>
-    
-	<!-- Menu usuario -->
-	<h:panelGroup rendered="#{sessionScope.usuario.tipo == 2}">
-		<h:panelGrid columns="1" border="1">
-			<h:outputLabel align="center" id="usernameLabel" 
-			for="username" value=" Bienvenido: #{sessionScope.usuario.usuario} " /> 
-		</h:panelGrid>
-		<br />
-		
-		<h:panelGrid columns="18" border="0">
-	
-			<ul style="list-style-type:none; margin: 0; padding: 0;">
-				<li>
-					<h:link value="Listado tareas" outcome="tareas" /> |
-		  			<h:link value="Crear tarea" outcome="altaTarea" /> |
-		  			<!-- <h:link value="Editar tarea" outcome="editarTarea" /> |  --> 	  		
-		  			<h:form padding="top"> 
-		  				<h:commandLink id="Salir" value="Salir" align="right" action="#{usuarioBean.eliminarSesion}" /> 
-		  			</h:form>	  		
-		  		</li>
-			</ul>
-		</h:panelGrid>
-    	
-	</h:panelGroup>
-	
-	<!-- Menu anonimo -->
-	<h:panelGroup rendered="#{sessionScope.usuario.tipo == NULL}">
-		<ul style="list-style-type:none; margin: 0; padding: 0;">
-				<li>
-					<h:link value="Listado tareas" outcome="tareas" /> |
-		  			<h:link value="Registrarse" align="right" outcome="login" />
-		  		</li>
-			</ul>
-	
-	</h:panelGroup>
-			
+	<div class="navbar navbar-inverse">
+  		<div class="container-fluid">
+  			<div class="navbar-header">
+      			<a class="navbar-brand">toDoList</a>
+    		</div>
+    		<!-- Administrador -->
+	    	<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+	    	<h:panelGroup rendered="#{sessionScope.usuario.tipo == 1}">
+	    		<ul class="nav navbar-nav">
+	    			<li><h:link value="Usuarios" outcome="usuarios"/></li>
+    				<li><h:link value="Nuevo usuario" outcome="altaUsr"/></li>
+    				<li><h:link value="Tareas de usuarios" outcome="tareas"/></li>
+	    		</ul>
+	    		<ul class="nav navbar-nav navbar-right">
+	    			<li><h:link value="#{sessionScope.usuario.usuario}"/></li>
+	    			<li><h:link value="Editar datos personales" outcome="editarInfoPersonalDisplay"></h:link></li>
+    			</ul>
+          			
+          		</h:panelGroup>
+          		<!-- Usuario -->
+				<h:panelGroup rendered="#{sessionScope.usuario.tipo == 2}">
+					<ul class="nav navbar-nav">
+	    				<li><h:link value="Tareas" outcome="tareas"/></li>
+    					<li><h:link outcome="altaTarea"><span class="glyphicon glyphicon-plus"/></h:link></li>
+	    			</ul>
+					<ul class="nav navbar-nav navbar-right">
+						<li><h:link value="#{sessionScope.usuario.usuario}"/></li>
+						<li><h:link value="Editar datos personales" outcome="editarInfoPersonalDisplay"></h:link></li>						  	
+    				</ul>
+				</h:panelGroup>
+	    	</div>
+	  	</div>
+	</div>
+	<div class="blockquote-reverse">
+	<h:form>
+	    <h:commandLink id="Salir" action="#{usuarioBean.eliminarSesion}">
+	    	<span class="glyphicon glyphicon-log-out"/> Salir
+	    </h:commandLink>
+    </h:form>
+    </div>
 </h:body>
 </html>

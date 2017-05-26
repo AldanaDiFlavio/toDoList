@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	>
+
+<h:head>
+	<title>toDoList - Cerrar cuenta</title>
+</h:head>
+
+<h:body>
+	<ui:include src="/header.xhtml" />
+	<f:metadata>
+    	<f:event type="preRenderView" listener="#{usuarioBean.verificarSesion}" />
+	</f:metadata>
+	
+	<div class="container">
+		<div class="row">
+			<div class="col-md-4 col-md-offset-4">
+			<h3>Cerrar cuenta</h3>
+			<div class="login-panel panel panel-default">
+				<div class="panel-body">
+					<h:form id="formId" name="formId">
+						<fieldset>
+							<h:outputLabel for="mensaje">¿Está seguro que desea eliminar su cuenta?</h:outputLabel>
+						</fieldset>
+						<h:commandButton class="btn btn-warining btn-lg btn-block" id="aceptar" action="#{usuarioBean.cerrarCuenta(sessionScope.usuario.usuario)}" value="Aceptar"/>
+						
+						<h:panelGroup rendered="#{sessionScope.usuario.tipo == 1}">
+							<h:link class="btn btn-primary btn-lg btn-block" value="Cancelar" outcome="usuario" />
+						</h:panelGroup>
+						<h:panelGroup rendered="#{sessionScope.usuario.tipo == 2}">
+							<h:link class="btn btn-primary btn-lg btn-block" value="Cancelar" outcome="tareas" />
+						</h:panelGroup>
+						
+					</h:form>
+				</div>
+			</div>
+			</div>
+		</div>
+	</div>
+</h:body>
+</html>
